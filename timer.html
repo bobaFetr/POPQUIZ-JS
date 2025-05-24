@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown Timer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        .timer-container {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 1rem;
+            text-align: center;
+            margin-bottom: 10px;
+            width: 80px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="timer-container">
+        <h1 id="timer">00:00</h1>
+        <input type="number" id="minutesInput" placeholder="Minutes">
+        <button id="startStop">Start</button>
+        <button id="reset">Reset</button>
+    </div>
+    
+    <script>
+        let timer;
+        let isRunning = false;
+        let totalSeconds = 0;
+
+        const timerDisplay = document.getElementById('timer');
+        const minutesInput = document.getElementById('minutesInput');
+        const startStopButton = document.getElementById('startStop');
+        const resetButton = document.getElementById('reset');
+
+        function updateTimer() {
+            if (totalSeconds > 0) {
+                totalSeconds--;
+                const minutes = Math.floor(totalSeconds / 60);
+                const seconds = totalSeconds % 60;
+                timerDisplay.textContent = 
+                    `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            } else {
+                clearInterval(timer);
+                timerDisplay.textContent = "Time's up!";
+                isRunning = false;
+                startStopButton.textContent = "Start";
+            }
+        }
+
+        startStopButton.addEventListener('click', () => {
+            if (!isRunning) {
+                totalSeconds = parseInt(minutesInput.value) * 60 || 0;
+                if (totalSeconds > 0) {
+                    timer = setInterval(updateTimer, 1000);
+                    startStopButton.textContent = "Stop";
+                }
+            } else {
+                clearInterval(timer);
+                startStopButton.textContent = "Start";
+            }
+            isRunning = !isRunning;
+        });
+
+        resetButton.addEventListener('click', () => {
+            clearInterval(timer);
+            isRunning = false;
+            totalSeconds = 0;
+            timerDisplay.textContent = "00:00";
+            startStopButton.textContent = "Start";
+        });
+    </script>
+</body>
+</html>
