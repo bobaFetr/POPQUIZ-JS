@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Management</title>
+</head>
+<body>
+    <h1>Car Management</h1>
+    <button id="loadCars">Load Cars</button>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Make</th>
+                <th>Model</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Cars will be dynamically loaded here -->
+        </tbody>
+    </table>
+    <h2>Add/Edit Car</h2>
+    <form>
+        <label for="make">Make:</label>
+        <input type="text" name="make" id="make">
+        <label for="model">Model:</label>
+        <input type="text" name="model" id="model">
+        <button type="submit">Save</button>
+    </form>
+    <script>
+       /// const baseUrl = 'http://localhost:3030/jsonstore/cars'; 
+        //http://localhost:3030/jsonstore/History.json
+       const baseUrl = 'http://localhost:3030/jsonstore/data';
+
+        const loadCarsBtn = document.getElementById('loadCars');
+        const tbody = document.querySelector('table tbody');
+        const form = document.querySelector('form');
+
+        document.getElementById('loadCars').addEventListener('click', loadCars);
+        //document.getElementById('createCar').addEventListener('click', () => form.reset());
+        form.addEventListener('submit', createCar);
+
+        async function loadCars() {
+                tbody.innerHTML = '';
+                try {
+                        const response = await fetch(baseUrl);///////////////////////////////////////////////////////////////////////////////////////
+                        const data = await response.json();
+
+                        Object.entries(data).forEach(([id, car]) => {
+                                const row = document.createElement('tr');
+                                row.innerHTML = `
+                                        <td>${car.make}</td>
+                                        <td>${car.model}</td>
+                                        <td>
+                                                <button onclick="editCar('${id}', '${car.make}', '${car.model}')">Edit</button>
+                                                <button onclick="deleteCar('${id}')">Delete</button>
+                                        </td>`;
+                                tbody.appendChild(row);
+                        });
+                } catch (error) {
+                        console.error('Error loading cars:', error);
+                }
+        }
+
+        async function createCar(event) {
+                event.preventDefault();
+
+                const make = form.querySelector('input[name="make"]').value.trim();
+                const model = form.querySelector('input[name="model"]').value.trim();
+
+                if (!make || !model) {
+                        alert('Both make and model fields are required!');
+                        return;
+                }
+
+                try {
+                        await fetch(baseUrl, {
+                                method: 'POST',///////////////////////////////////////////////////////////////////////////////////////////////////////d
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ make, model }),
+                        });
+                        form.reset();
+                        loadCars();
+                } catch (error) {
+                        console.error('Error creating car:', error);
+                }
+        }
+
+        async function editCar(id, make, model) {
+                form.querySelector('input[name="make"]').value = make;
+                form.querySelector('input[name="model"]').value = model;
+
+                form.removeEventListener('submit', createCar);
+                form.addEventListener('submit', async (event) => {
+                        event.preventDefault();
+
+                        const updatedMake = form.querySelector('input[name="make"]').value.trim();
+                        const updatedModel = form.querySelector('input[name="model"]').value.trim();
+
+                        if (!updatedMake || !updatedModel) {
+                                alert('Both fields are required!');
+                                return;
+                        }
+
+                        try {
+                                await fetch(`${baseUrl}/${id}`, {
+                                        method: 'PUT',////////////////////////////////////////////////////////////////
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ make: updatedMake, model: updatedModel }),
+                                });
+                                form.reset();
+                                form.addEventListener('submit', createCar);
+                                loadCars();
+                        } catch (error) {
+                                console.error('Error updating car:', error);
+                        }
+                }, { once: true });
+        }
+
+        async function deleteCar(id) {
+                try {
+                        await fetch(`${baseUrl}/${id}`, { method: 'DELETE' });
+                        loadCars();
+                } catch (error) {
+                        console.error('Error deleting car:', error);
+                }
+        }
+    </script>
+</body>
+</html>

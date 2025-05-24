@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wikipedia Search</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background: #f9f9f9;
+    }
+    h1 {
+      text-align: center;
+    }
+    #searchBox {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    input[type="text"] {
+      width: 80%;
+      padding: 0.5rem;
+      font-size: 1rem;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      margin-left: 0.5rem;
+    }
+    #result {
+      margin-top: 2rem;
+      background: #fff;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Wikipedia Search</h1>
+  <div id="searchBox">
+    <input type="text" id="searchInput" placeholder="Search Wikipedia..." />
+    <button onclick="searchWiki()">Search</button>
+  </div>
+  <div id="result"></div>
+
+  <script>
+    async function searchWiki() {
+      const query = document.getElementById('searchInput').value;
+      const resultBox = document.getElementById('result');
+      resultBox.innerHTML = 'Loading...';
+
+      try {
+        const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`);
+        if (!res.ok) throw new Error("Article not found");
+        const data = await res.json();
+
+        resultBox.innerHTML = `
+          <h2>${data.title}</h2>
+          <p>${data.extract}</p>
+          <a href="${data.content_urls.desktop.page}" target="_blank">Read more on Wikipedia</a>
+        `;
+      } catch (error) {
+        resultBox.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+      }
+    }
+  </script>
+</body>
+</html>

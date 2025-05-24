@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HTML Pop Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background-color: #f4f4f4;
+      border-radius: 8px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .question {
+      margin-bottom: 1.5rem;
+    }
+    .question-title {
+      font-weight: bold;
+    }
+    .result {
+      font-weight: bold;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>HTML Pop Quiz</h1>
+
+  <form id="quizForm">
+    <div class="question">
+      <div class="question-title">1. What does HTML stand for?</div>
+      <label><input type="radio" name="q1" value="a"> Hyper Text Markup Language</label><br>
+      <label><input type="radio" name="q1" value="b"> Home Tool Markup Language</label><br>
+      <label><input type="radio" name="q1" value="c"> Hyperlinks and Text Markup Language</label>
+    </div>
+
+    <div class="question">
+      <div class="question-title">2. Which HTML tag is used to define an internal style sheet?</div>
+      <label><input type="radio" name="q2" value="a">&lt;style&gt;</label><br>
+      <label><input type="radio" name="q2" value="b">&lt;css&gt;</label><br>
+      <label><input type="radio" name="q2" value="c">&lt;script&gt;</label>
+    </div>
+
+    <div class="question">
+      <div class="question-title">3. Choose the correct HTML element for the largest heading:</div>
+      <label><input type="radio" name="q3" value="a">&lt;h6&gt;</label><br>
+      <label><input type="radio" name="q3" value="b">&lt;head&gt;</label><br>
+      <label><input type="radio" name="q3" value="c">&lt;h1&gt;</label>
+    </div>
+
+    <button type="button" onclick="checkAnswers()">Submit</button>
+    <div id="result" class="result"></div>
+  </form>
+</html>
