@@ -4,26 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <h1>Admin Panel</h1>
 </head>
 <body>
+    <!-- on each option row a check box "Correct Answer" should apper and when it's clicked the row becomes the right answer -->
     <ol>
-        <li>
-            
-                <input type="radio" name="option" value="1"> Option 1
-            
-        </li>
-        <li>
-            
-                <input type="radio" name="option" value="2"> Option 2
-            
-        </li>
-        <li>
-                <input type="radio" name="option" value="3"> Option 3
-        </li>
-        <li>
-                <input type="radio" name="option" value="3"> Option 3
-        </li>
-    </ol>
+    <li>
+        <input type="radio" name="option" value="1"> Option 1
+        <input type="checkbox" class="correct-answer"> Correct Answer
+    </li>
+    <li>
+        <input type="radio" name="option" value="2"> Option 2
+        <input type="checkbox" class="correct-answer"> Correct Answer
+    </li>
+    <li>
+        <input type="radio" name="option" value="3"> Option 3
+        <input type="checkbox" class="correct-answer"> Correct Answer
+    </li>
+    <li>
+        <input type="radio" name="option" value="4"> Option 4
+        <input type="checkbox" class="correct-answer"> Correct Answer
+    </li>
+</ol>
+
+<style>
+    .correct-answer:checked + input[type="radio"] {
+        background-color: yellow; /* Highlight the correct answer */
+    }
+</style>
     <h1>Car Management</h1>
     <button id="loadCars">Load Cars</button>
     <table border="1">
