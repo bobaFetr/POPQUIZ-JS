@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HTML Pop Quiz with Timer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background-color: #f4f4f4;
+      border-radius: 8px;
+      position: relative;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .question {
+      margin-bottom: 1.5rem;
+    }
+
+    .question-title {
+      font-weight: bold;
+    }
+
+    .result {
+      font-weight: bold;
+      margin-top: 1rem;
+    }
+
+    /* Timer Styles */
+    .timer-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: white;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      text-align: center;
+    }
+
+    .timer-container h1 {
+      font-size: 1.5rem;
+      margin: 0 0 10px 0;
+    }
+
+    .timer-container input {
+      width: 60px;
+      padding: 5px;
+      font-size: 1rem;
+      text-align: center;
+    }
+
+    .timer-container button {
+      padding: 5px 10px;
+      margin: 5px 2px;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Timer -->
+   <p>HTe timer must be visible without the stop and reset options</p>
+  <div class="timer-container">
+    <h1 id="timer">00:00</h1>
+    <input type="number" id="minutesInput" placeholder="Min" />
+    <br>
+    <button id="startStop">Start</button>
+    <button id="reset">Reset</button>
+  </div>
+
+  <!-- Quiz -->
+  <h1>HTML Pop Quiz</h1>
+  <form id="quizForm">
+    <div class="question">
+      <div class="question-title">1. What does HTML stand for?</div>
+      <label><input type="radio" name="q1" value="a"> Hyper Text Markup Language</label><br>
+      <label><input type="radio" name="q1" value="b"> Home Tool Markup Language</label><br>
+      <label><input type="radio" name="q1" value="c"> Hyperlinks and Text Markup Language</label>
+    </div>
+
+    <div class="question">
+      <div class="question-title">2. Which HTML tag is used to define an internal style sheet?</div>
+      <label><input type="radio" name="q2" value="a">&lt;style&gt;</label><br>
+      <label><input type="radio" name="q2" value="b">&lt;css&gt;</label><br>
+      <label><input type="radio" name="q2" value="c">&lt;script&gt;</label>
+    </div>
+
+    <div class="question">
+      <div class="question-title">3. Choose the correct HTML element for the largest heading:</div>
+      <label><input type="radio" name="q3" value="a">&lt;h6&gt;</label><br>
+      <label><input type="radio" name="q3" value="b">&lt;head&gt;</label><br>
+      <label><input type="radio" name="q3" value="c">&lt;h1&gt;</label>
+    </div>
+
+    <button type="button" onclick="checkAnswers()">Submit</button>
+    <div id="result" class="result"></div>
+  </form>
+
+  <script>
+    function checkAnswers() {
+      const answers = {
+        q1: 'a',
+        q2: 'a',
+        q3: 'c'
+      };
+
+      let score = 0;
+      for (let key in answers) {
+        const selected = document.querySelector(`input[name="${key}"]:checked`);
+        if (selected && selected.value === answers[key]) {
+          score++;
+        }
+      }
+
+      const result = document.getElementById('result');
+      result.textContent = `You got ${score} out of ${Object.keys(answers).length} correct.`;
+    }
+
+    // Timer Script
+    let timer;
+    let isRunning = false;
+    let totalSeconds = 0;
+
+    const timerDisplay = document.getElementById('timer');
+    const minutesInput = document.getElementById('minutesInput');
+    const startStopButton = document.getElementById('startStop');
+    const resetButton = document.getElementById('reset');
+
+    function updateTimer() {
+      if (totalSeconds > 0) {
+        totalSeconds--;
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        timerDisplay.textContent =
+          `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      } else {
+        clearInterval(timer);
+        timerDisplay.textContent = "Time's up!";
+        isRunning = false;
+        startStopButton.textContent = "Start";
+      }
+    }
+
+    startStopButton.addEventListener('click', () => {
+      if (!isRunning) {
+        totalSeconds = parseInt(minutesInput.value) * 60 || 0;
+        if (totalSeconds > 0) {
+          timer = setInterval(updateTimer, 1000);
+          startStopButton.textContent = "Stop";
+        }
+      } else {
+        clearInterval(timer);
+        startStopButton.textContent = "Start";
+      }
+      isRunning = !isRunning;
+    });
+
+    resetButton.addEventListener('click', () => {
+      clearInterval(timer);
+      isRunning = false;
+      totalSeconds = 0;
+      timerDisplay.textContent = "00:00";
+      startStopButton.textContent = "Start";
+    });
+  </script>
+</body>
+</html>
