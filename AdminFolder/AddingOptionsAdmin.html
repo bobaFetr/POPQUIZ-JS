@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; }
+        form { margin-top: 20px; }
+        .option-row { margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Quiz Management</h1>
+
+    <button id="loadQuestions">Load Questions</button>
+    <table>
+        <thead>
+            <tr>
+                <th>Question</th>
+                <th>Options</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Questions will be loaded here -->
+        </tbody>
+    </table>
+
+    <h2>Add/Edit Question</h2>
+    <form id="quizForm">
+        <label for="questionText">Question:</label>
+        <input type="text" id="questionText" name="questionText">
+        <div id="optionsContainer"></div>
+        <button type="button" id="addOptionBtn">Add Option</button>
+        <button type="submit">Save Question</button>
+    </form>
+
+    <script>
+        const baseUrl = 'http://localhost:3030/jsonstore/quiz'; // Update this if needed
+        const form = document.getElementById('quizForm');
+        const tbody = document.querySelector('table tbody');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const addOptionBtn = document.getElementById('addOptionBtn');
+        const loadBtn = document.getElementById('loadQuestions');
+        let editingId = null;
+
+        loadBtn.addEventListener('click', loadQuestions);
+        form.addEventListener('submit', saveQuestion);
+        addOptionBtn.addEventListener('click', () => addOption());
+
+        function addOption(text = '', isCorrect = false) {
+            const div = document.createElement('div');
+            div.classList.add('option-row');
+            div.innerHTML = `
+                <input type="radio" disabled>
+                <input type="text" class="optionText" value="${text}" placeholder="Option text">
+                <label>
+                    <input type="checkbox" class="correctAnswer" ${isCorrect ? 'checked' : ''}> Correct
+                </label>
+                <button type="button" onclick="this.parentElement.remove()">Remove</button>
+            `;
+            optionsContainer.appendChild(div);
+        }
+
+        async function loadQuestions() {
+            tbody.innerHTML = '';
+            try {
+                const res = await fetch(baseUrl);
+                const data = await res.json();
+
+                Object.entries(data).forEach(([id, question]) => {
+                    const row = document.createElement('tr');
+                    const optionsHtml = question.options.map(opt =>
+                        `${opt.text} ${opt.correct ? '<strong>(Correct)</strong>' : ''}`
+                    ).join('<br>');
+
+                    row.innerHTML = `
+                        <td>${question.text}</td>
+                        <td>${optionsHtml}</td>
+                        <td>
+                            <button onclick='editQuestion("${id}")'>Edit</button>
+                            <button onclick='deleteQuestion("${id}")'>Delete</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (err) {
+                console.error('Failed to load questions:', err);
+            }
+        }
+
+        async function saveQuestion(e) {
+            e.preventDefault();
+
+            const questionText = document.getElementById('questionText').value.trim();
+            if (!questionText) {
+                alert('Question text is required.');
+                return;
+            }
+
+            const optionDivs = Array.from(optionsContainer.children);
+            if (optionDivs.length === 0) {
+                alert('Add at least one option.');
+                return;
+            }
+
+            const options = optionDivs.map(div => ({
+                text: div.querySelector('.optionText').value.trim(),
+                correct: div.querySelector('.correctAnswer').checked
+            })).filter(opt => opt.text);
+
+            if (options.length === 0) {
+                alert('All options are empty!');
+                return;
+            }
+
+            const data = { text: questionText, options };
+            const method = editingId ? 'PUT' : 'POST';
+            const url = editingId ? `${baseUrl}/${editingId}` : baseUrl;
+
+            try {
+                await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                form.reset();
+                optionsContainer.innerHTML = '';
+                editingId = null;
+                loadQuestions();
+            } catch (err) {
+                console.error('Failed to save question:', err);
+            }
+        }
+
+        async function editQuestion(id) {
+            try {
+                const res = await fetch(`${baseUrl}/${id}`);
+                const data = await res.json();
+
+                document.getElementById('questionText').value = data.text;
+                optionsContainer.innerHTML = '';
+                data.options.forEach(opt => addOption(opt.text, opt.correct));
+                editingId = id;
+            } catch (err) {
+                console.error('Failed to load question:', err);
+            }
+        }
+
+        async function deleteQuestion(id) {
+            try {
+                await fetch(`${baseUrl}/${id}`, { method: 'DELETE' });
+                loadQuestions();
+            } catch (err) {
+                console.error('Failed to delete question:', err);
+            }
+        }
+    </script>
+</body>
+</html>
