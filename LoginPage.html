@@ -63,72 +63,48 @@
 <body>
   <div class="login-container">
     <h2>Login</h2>
-    <form action="/login" method="POST">
-      <div class="form-group">
-        <label for="username">Username</label>
-        <input type="text" id="username" name="username" required />
-      </div>
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" required />
-      </div>
-      <button type="submit" class="login-button">Log In</button>
-    </form>
+   <form id="loginForm">
+  <div class="form-group">
+    <label for="username">Email</label>
+    <input type="email" id="username" name="username" required />
   </div>
-  ///////////////////////////////////////////////////////////////////////////////////////////////////
-  <script>
-    const baseUrl = 'http://localhost:3030/jsonstore/users/register'; // Update this if needed
-        const form = document.getElementById('quizForm');
-        const tbody = document.querySelector('table tbody');
-        const optionsContainer = document.getElementById('optionsContainer');
-        const addOptionBtn = document.getElementById('addOptionBtn');
-        const loadBtn = document.getElementById('loadQuestions');
-        let editingId = null;
-    ///////////////////////////////////////////
-    async function saveQuestion(e) {
-            e.preventDefault();
+  <div class="form-group">
+    <label for="password">Password</label>
+    <input type="password" id="password" name="password" required />
+  </div>
+  <button type="submit" class="login-button">Log In</button>
+</form>
+<script>
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-            const questionText = document.getElementById('questionText').value.trim();
-            if (!questionText) {
-                alert('Question text is required.');
-                return;
-            }
+    const email = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
 
-            const optionDivs = Array.from(optionsContainer.children);
-            if (optionDivs.length === 0) {
-                alert('Add at least one option.');
-                return;
-            }
+    try {
+      const res = await fetch('http://localhost:3030/users/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
 
-            const options = optionDivs.map(div => ({
-                text: div.querySelector('.optionText').value.trim(),
-                correct: div.querySelector('.correctAnswer').checked
-            })).filter(opt => opt.text);
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message);
+      }
 
-            if (options.length === 0) {
-                alert('All options are empty!');
-                return;
-            }
+      const data = await res.json();
+      localStorage.setItem('authToken', data.accessToken); // Store the token
+      localStorage.setItem('userId', data._id);            // Optional: store user ID
+      alert('Login successful!');
+      // Redirect or update the page
+      window.location.href = '/dashboard.html'; // Change to your desired route
+    } catch (err) {
+      alert('Login failed: ' + err.message);
+    }
+  });
+</script>
 
-            const data = { text: questionText, options };
-            const method = editingId ? 'PUT' : 'POST';
-            const url = editingId ? `${baseUrl}/${editingId}` : baseUrl;
 
-            try {
-                await fetch(url, {
-                    method,
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-
-                form.reset();
-                optionsContainer.innerHTML = '';
-                editingId = null;
-                loadQuestions();
-            } catch (err) {
-                console.error('Failed to save question:', err);
-            }
-        }
-  </script>
 </body>
 </html>
