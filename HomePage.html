@@ -14,5 +14,14 @@
     <!-- <a href="HTMLPopQuiz.html">HTML Pop Quiz</a>
     <a href="HTMLPopQuiz2.html">HTML Pop Quiz 2</a>
     <link rel="stylesheet" href="index.html"> -->
+    <script>
+    // Check if the user is logged in
+    const user = localStorage.getItem('user');
+    if (!user) {
+      // Redirect to the login page if not logged in
+      alert('You must log in to access this page.');
+      window.location.href = 'LoginPage.html';
+    }
+  </script>
 </body>
 </html>
