@@ -1,3 +1,4 @@
+
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('http'), require('fs'), require('crypto')) :
     typeof define === 'function' && define.amd ? define(['http', 'fs', 'crypto'], factory) :
@@ -440,8 +441,6 @@
     //     return context.auth.register(body);
     // }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    const ADMIN_FLAG_KEY = '_adminCreated';
-
     const bcrypt = require('bcrypt');
 
 async function onRegister(context, tokens, query, body) {
@@ -453,46 +452,29 @@ async function onRegister(context, tokens, query, body) {
 
     const users = context.protectedStorage.get('users') || [];
 
-    const alreadyExists = users.find(u => u.email === email);
-    if (alreadyExists) {
+    const existing = users.find(u => u.email === email);
+    if (existing) {
         throw new Error("Email already registered");
     }
-
-    // Check if admin was already registered
-    const flags = context.protectedStorage.get('config') || [];
-    const adminAlreadyExists = flags.find(f => f.key === '_adminCreated');
-
-    // First admin registration
-    const isAdmin = !adminAlreadyExists;
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = context.protectedStorage.add('users', {
         email,
-        hashedPassword,
-        isAdmin
+        hashedPassword
     });
 
-    // Mark admin as created, only once
-    if (isAdmin) {
-        context.protectedStorage.add('config', {
-            key: '_adminCreated',
-            value: true
-        });
-    }
+    const token = generateToken(); // Generate a simple token (you can improve this)
 
-    const token = generateToken();
     context.tokens = context.tokens || {};
     context.tokens[token] = user._id;
 
     return {
         _id: user._id,
         email: user.email,
-        accessToken: token,
-        isAdmin
+        accessToken: token
     };
 }
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // function onLogin(context, tokens, query, body) {

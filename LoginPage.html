@@ -94,22 +94,22 @@
         throw new Error(err.message);
       }
 
-    //   const data = await res.json();
-    //   localStorage.setItem('authToken', data.accessToken); // Store the token
-    //   localStorage.setItem('userId', data._id);            // Optional: store user ID
-    const data = await res.json();
-localStorage.setItem('authToken', data.accessToken);
-localStorage.setItem('userId', data._id);
-localStorage.setItem('isAdmin', data.isAdmin);
+      const data = await res.json();
+      localStorage.setItem('authToken', data.accessToken); // Store the token
+      localStorage.setItem('userId', data._id);            // Optional: store user ID
+//     const data = await res.json();
+// localStorage.setItem('authToken', data.accessToken);
+// localStorage.setItem('userId', data._id);
+// localStorage.setItem('isAdmin', data.isAdmin);
 
-console.log('Admin status:', data.isAdmin);
+// console.log('Admin status:', data.isAdmin);
 
-// ✅ Redirect to admin panel if admin
-if (data.isAdmin) {
-  window.location.href = '/admin.html';
-} else {
-  window.location.href = '/dashboard.html';
-}
+// // ✅ Redirect to admin panel if admin
+// if (data.isAdmin) {
+//   window.location.href = '/AddingOptionsAdmin.html';
+// } else {
+//   window.location.href = '/HomePage.html';
+// }
 
       alert('Login successful!');
       // Redirect or update the page
