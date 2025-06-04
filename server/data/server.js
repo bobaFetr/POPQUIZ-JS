@@ -431,6 +431,10 @@
             throw new AuthorizationError$1();
         }
     }
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    function generateToken() {
+    return 'token-' + Math.random().toString(36).substring(2);
+}
 
     // function onRegister(context, tokens, query, body) {
     //     return context.auth.register(body);
