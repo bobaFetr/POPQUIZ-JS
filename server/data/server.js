@@ -432,17 +432,90 @@
         }
     }
 
-    function onRegister(context, tokens, query, body) {
-        return context.auth.register(body);
+    // function onRegister(context, tokens, query, body) {
+    //     return context.auth.register(body);
+    // }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    const bcrypt = require('bcrypt');
+
+async function onRegister(context, tokens, query, body) {
+    const { email, password } = body;
+
+    if (!email || !password) {
+        throw new Error("Email and password are required");
     }
 
-    function onLogin(context, tokens, query, body) {
-        return context.auth.login(body);
+    const users = context.protectedStorage.get('users') || [];
+
+    const existing = users.find(u => u.email === email);
+    if (existing) {
+        throw new Error("Email already registered");
     }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = context.protectedStorage.add('users', {
+        email,
+        hashedPassword
+    });
+
+    const token = generateToken(); // Generate a simple token (you can improve this)
+
+    context.tokens = context.tokens || {};
+    context.tokens[token] = user._id;
+
+    return {
+        _id: user._id,
+        email: user.email,
+        accessToken: token
+    };
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // function onLogin(context, tokens, query, body) {
+    //     return context.auth.login(body);
+    // }
+
+    async function onLogin(context, tokens, query, body) {
+    const { email, password } = body;
+
+    const users = context.protectedStorage.get('users') || [];
+    const user = users.find(u => u.email === email);
+
+    if (!user) {
+        throw new Error("User not found");
+    }
+
+    const isMatch = await bcrypt.compare(password, user.hashedPassword);
+    if (!isMatch) {
+        throw new Error("Incorrect password");
+    }
+
+    const token = generateToken();
+    context.tokens = context.tokens || {};
+    context.tokens[token] = user._id;
+
+    return {
+        _id: user._id,
+        email: user.email,
+        accessToken: token
+    };
+}
+/////////////////////////////////////////////////////////////////////////////////////////////
+    // function onLogout(context, tokens, query, body) {
+    //     return context.auth.logout();
+    // }
 
     function onLogout(context, tokens, query, body) {
-        return context.auth.logout();
+    const token = context.request.headers['x-authorization'];
+
+    if (context.tokens && token && context.tokens[token]) {
+        delete context.tokens[token];
     }
+
+    return ''; // return nothing, status 204 will be handled in your server
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     var users = userService.parseRequest;
 
