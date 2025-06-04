@@ -99,7 +99,7 @@
         localStorage.setItem('authToken', data.accessToken);
         localStorage.setItem('userId', data._id);
         alert('Registration successful!');
-        window.location.href = '/login.html'; // or your dashboard
+        window.location.href = './HomePage.html'; // or your dashboard
       } catch (err) {
         alert('Registration failed: ' + err.message);
       }
