@@ -487,8 +487,8 @@ async function onRegister(context, tokens, query, body) {
     const users = context.protectedStorage.get('users') || [];
     const user = users.find(u => u.email === email);
 
-    if (!user) {
-        throw new Error("User not found");
+    if (!user) {//new
+        throw  Error("User not found");
     }
 
     const isMatch = await bcrypt.compare(password, user.hashedPassword);
