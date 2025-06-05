@@ -472,7 +472,8 @@ async function onRegister(context, tokens, query, body) {
     return {
         _id: user._id,
         email: user.email,
-        accessToken: token
+        accessToken: token,
+        isAdmin : false // Default to false, you can change this based on your logic
     };
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
