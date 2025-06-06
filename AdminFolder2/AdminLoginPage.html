@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .login-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 300px;
+    }
+
+    .login-container h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .login-button {
+      width: 100%;
+      padding: 0.75rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .login-button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>Login</h2>
+   <form id="loginForm">
+  <div class="form-group">
+    <label for="username">Email</label>
+    <input type="email" id="username" name="username" required />
+  </div>
+  <div class="form-group">
+    <label for="password">Password</label>
+    <input type="password" id="password" name="password" required />
+  </div>
+  <button type="submit" class="login-button">Log In</button>
+  <li><a href="RegisterPage.html">Don't have account? Register!</a></li>
+</form>
+<script>
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+
+    try {
+      const res = await fetch('http://localhost:3030/users/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message);
+      }
+
+      const data = await res.json();
+      localStorage.setItem('authToken', data.accessToken); // Store the token
+      localStorage.setItem('userId', data._id);            // Optional: store user ID
+//     const data = await res.json();
+// localStorage.setItem('authToken', data.accessToken);
+// localStorage.setItem('userId', data._id);
+// localStorage.setItem('isAdmin', data.isAdmin);
+
+// console.log('Admin status:', data.isAdmin);
+
+// // ✅ Redirect to admin panel if admin
+// if (data.isAdmin) {
+//   window.location.href = '/AddingOptionsAdmin.html';
+// } else {
+//   window.location.href = '/HomePage.html';
+// }
+
+      alert('Login successful!');
+      // Redirect or update the page
+      window.location.href = '/HomePage.html'; // Change to your desired route
+    } catch (err) {
+      alert('Login failed: ' + err.message);
+    }
+  });
+</script>
+
+
+</body>
+</html>
