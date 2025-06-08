@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Login Page</title>
+  <title>Login As Admin</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -47,7 +47,7 @@
     .login-button {
       width: 100%;
       padding: 0.75rem;
-      background-color: #007bff;
+      background-color: #ff0000;
       color: white;
       border: none;
       border-radius: 5px;
@@ -56,13 +56,13 @@
     }
 
     .login-button:hover {
-      background-color: #0056b3;
+      background-color: #b30000;
     }
   </style>
 </head>
 <body>
   <div class="login-container">
-    <h2>Login</h2>
+    <h2>Login As Admin</h2>
    <form id="loginForm">
   <div class="form-group">
     <label for="username">Email</label>
@@ -104,20 +104,20 @@
 
 // console.log('Admin status:', data.isAdmin);
 
-// // ✅ Redirect to admin panel if admin
-// if (data.isAdmin) {
-//   window.location.href = '/AddingOptionsAdmin.html';
-// } else {
-//   window.location.href = '/HomePage.html';
-// }
+// ✅ Redirect to admin panel if admin
+if (data.isAdmin) {
+  window.location.href = '/AddingOptionsAdmin.html';
+} else {
+  window.location.href = '/HomePage.html';
+}
 
       alert('Login successful!');
       // Redirect or update the page
-      window.location.href = '/HomePage.html'; // Change to your desired route
+     // window.location.href = '/HomePage.html'; // Change to your desired route
     } catch (err) {
       alert('Login failed: ' + err.message);
     }
-  });
+ });
 </script>
 
 

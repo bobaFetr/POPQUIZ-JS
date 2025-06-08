@@ -12,6 +12,8 @@
         <li><a href="HTMLPopQuiz.html">HTML Pop Quiz</a></li>
         <li><a href="PopQuizWithTimer.html">HTML Pop Quiz 2</a></li>
     </ul>
+    <h1>Quiz Questions</h1>
+  <div id="questionsContainer"></div>
     <!-- <a href="HTMLPopQuiz.html">HTML Pop Quiz</a>
     <a href="HTMLPopQuiz2.html">HTML Pop Quiz 2</a>
     <link rel="stylesheet" href="index.html"> -->
@@ -51,6 +53,44 @@
     window.location.href = '/LoginPage.html'; // Adjust path as needed
   });
 </script>
+
+
+
+<!-- <script>
+async function loadQuestions() {
+    try {
+        const res = await fetch('http://localhost:3030/data/questions');
+        const questions = await res.json();
+
+        console.log('Loaded questions:', questions);
+
+        const container = document.getElementById('questionsContainer');
+        container.innerHTML = '';
+
+        questions.forEach(q => {
+            const qDiv = document.createElement('div');
+            qDiv.classList.add('question');
+
+            const qTitle = document.createElement('h3');
+            qTitle.textContent = q.text;
+            qDiv.appendChild(qTitle);
+
+            q.options.forEach(opt => {
+                const optP = document.createElement('p');
+                optP.textContent = opt.text;
+                qDiv.appendChild(optP);
+            });
+
+            container.appendChild(qDiv);
+        });
+    } catch (err) {
+        console.error('Failed to load questions:', err);
+    }
+}
+
+// Load questions when page loads
+window.addEventListener('DOMContentLoaded', loadQuestions);
+</script> -->
 
 </body>
 </html>

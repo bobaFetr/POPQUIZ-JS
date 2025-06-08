@@ -10,6 +10,7 @@
         form { margin-top: 20px; }
         .option-row { margin-bottom: 5px; }
     </style>
+    <a href="#" id="logout-button">Log Out</a>
 </head>
 <body>
     <h1>Admin Panel</h1>
@@ -159,5 +160,32 @@
             }
         }
     </script>
+
+    <script>
+  document.getElementById('logout-button').addEventListener('click', async (e) => {
+    e.preventDefault();
+
+    const token = localStorage.getItem('authToken');
+
+    try {
+      await fetch('http://localhost:3030/users/logout', {
+        method: 'GET',
+        headers: {
+          'X-Authorization': token
+        }
+      });
+    } catch (err) {
+      console.warn('Logout request failed, continuing anyway...');
+    }
+
+    // Clear user session
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userId');
+
+    // Redirect to login
+    window.location.href = '/LoginPage.html'; // Adjust path as needed
+  });
+</script>
+
 </body>
 </html>
